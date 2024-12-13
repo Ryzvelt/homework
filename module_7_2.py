@@ -1,46 +1,26 @@
-import string
+def custom_write(file_name, strings):
+    strings_positions = {}
 
-import string
+    with open(file_name, 'w', encoding='utf-8') as f:
+        for index, string in enumerate(strings, start=1):
+            byte_position = f.tell()  # Получаем текущую позицию байта
+            f.write(string + '\n')  # Записываем строку с переносом
+            strings_positions[(index, byte_position)] = string  # Сохраняем в словарь
 
-class WordsFinder:
-    def __init__(self, file_name):
-        self.file_name = file_name
-        self.words = self.get_all_words()
+    return strings_positions
 
-    def get_all_words(self):
-        with open(self.file_name, 'r', encoding='utf-8') as file:
-            content = file.read().lower()
-            content = content.translate(str.maketrans('', '', string.punctuation))
-            words = content.split()
-        return words
 
-    def find(self, word):
-        """Находит слово и возвращает его порядковый номер (1-индексация) в тексте."""
-        word = word.lower()
-        try:
-            index = self.words.index(word) + 1  # 1-индексация
-            return {self.file_name: index}
-        except ValueError:
-            return {self.file_name: None}  # Если слово не найдено
+# Пример выполняемого кода
+info = [
+    'Text for tell.',
+    'Используйте кодировку utf-8.',
+    'Because there are 2 languages!',
+    'Спасибо!'
+]
 
-    def count(self, word):
-        """Считает количество вхождений слова в тексте."""
-        word = word.lower()
-        total_count = self.words.count(word)
-        return {self.file_name: total_count}
+result = custom_write('test.txt', info)
+for elem in result.items():
+    # Извлекаем ключи и значения без скобок
+    key, value = elem
+    print(f"{key[0]}, {key[1]}: {value}")
 
-# Функция для создания файла с примерным содержимым
-def create_test_file():
-    with open('test_file.txt', 'w', encoding='utf-8') as file:
-        content = """It's a text for task. Найти везде, используйте его для самопроверки. 
-        Успехов в решении задачи. Text text text."""
-        file.write(content)
-
-# Создаем тестовый файл
-create_test_file()
-
-# Пример использования
-finder2 = WordsFinder('test_file.txt')
-print(finder2.get_all_words())  # Все слова
-print(finder2.find('TEXT'))      # 3 слово по счёту
-print(finder2.count('teXT'))     # 4 слова teXT в тексте всего
